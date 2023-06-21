@@ -1,0 +1,8 @@
+const item: Product = {
+  id: "trj-crd",
+  name: "Tarjetas de Credito",
+  logo: "https://www.visa.com.ec/dam/VCOM/regional/lac/SPA/Default/Pay%20With%20Visa/Tarjetas/visa-signature-400x225.jpg",
+  description: "Tarjeta de consumo bajo la modalidad de crédito",
+  date_release: "2023-02-01",
+  date_revision: "2024-02-01",
+};
