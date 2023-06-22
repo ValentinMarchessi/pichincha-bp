@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Table from "@/components/Table";
 import { AssetServices } from "@/services";
 import { Link } from "react-router-dom";
@@ -6,10 +6,19 @@ import "./App.css";
 
 function App() {
   const [assets, setAssets] = useState<Asset[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     AssetServices.getAssets().then((items) => setAssets(items));
   }, []);
+
+  const filteredAssets = useMemo(
+    () =>
+      assets.filter((asset) =>
+        asset.name.toLowerCase().includes(searchQuery.toLowerCase())
+      ),
+    [assets, searchQuery]
+  );
 
   return (
     <>
@@ -18,7 +27,12 @@ function App() {
       </nav>
       <div id="body">
         <div className="header">
-          <input id="searchbar" type="text" placeholder="Search..." />
+          <input
+            id="searchbar"
+            type="text"
+            placeholder="Search..."
+            onChange={(e) => setSearchQuery(e.currentTarget.value)}
+          />
           <Link id="assetForm" to="/assetForm">
             Agregar
           </Link>
@@ -32,7 +46,7 @@ function App() {
             "Fecha de reestructuración",
             "",
           ]}
-          items={assets}
+          items={filteredAssets}
           mapper={(asset) => (
             <tr className="asset" key={asset.id}>
               <td>

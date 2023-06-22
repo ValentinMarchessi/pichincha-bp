@@ -1,7 +1,9 @@
 import App from "@/pages/App";
 import { act, render, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { AssetServices as AssetServicesImport } from "@/services";
 import asset from "@tests/__mocks__/asset.json";
+import { BrowserRouter } from "react-router-dom";
 
 jest.mock("@/services");
 const AssetServices = AssetServicesImport as jest.Mocked<
@@ -15,6 +17,11 @@ const assetFactory = (): Asset => ({
 const items = Array.from({ length: 10 }, assetFactory);
 
 describe("App", () => {
+  const renderApp = () =>
+    render(<App />, {
+      wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+    });
+
   afterEach(() => {
     AssetServices.getAssets.mockClear();
   });
@@ -22,27 +29,40 @@ describe("App", () => {
     AssetServices.getAssets.mockResolvedValue(items);
   });
   it("Should have a logo", async () => {
-    const { findByAltText } = render(<App />);
+    const { findByAltText } = renderApp();
     expect(await findByAltText("logo-banco-pichincha")).toBeInTheDocument();
   });
   describe("Table", () => {
     describe("Controls", () => {
-      it("Has a search bar", async () => {
-        const { findByPlaceholderText } = render(<App />);
-        expect(await findByPlaceholderText("Search...")).toBeInTheDocument();
+      describe("Searchbar", () => {
+        it("Has a placeholder text", async () => {
+          const { findByPlaceholderText } = renderApp();
+          expect(await findByPlaceholderText("Search...")).toBeInTheDocument();
+        });
+        it.todo("Filters items by name");
+        it.todo("Displays a message when no items match the search criteria");
+        it.todo(
+          "Clears the search results and displays all items when the search input is empty"
+        );
+        it.todo(
+          "Updates the search results as the user types in the search input"
+        );
+        it.todo("Ignores case sensitivity when filtering items by name");
       });
-      describe.only("Add asset", () => {
+      describe("Add asset", () => {
         it("Has a button to add assets", async () => {
-          const { findByText } = render(<App />);
+          const { findByText } = renderApp();
           expect(await findByText("Agregar")).toBeInTheDocument();
         });
         it("Redirects to asset form", async () => {
-          const { findByText } = render(<App />);
+          const { findByText } = renderApp();
+          const user = userEvent.setup();
+          const button = await findByText("Agregar");
           await act(async () => {
-            const button = await findByText("Agregar");
-            button.click();
+            expect(AssetServices.getAssets).toHaveBeenCalledTimes(1);
+            await user.click(button);
           });
-          expect(await findByText("Asset Form")).toBeInTheDocument();
+          expect(window.location.pathname.endsWith("/assetForm")).toBeTruthy();
         });
       });
     });
@@ -54,13 +74,13 @@ describe("App", () => {
         "Fecha de liberación",
       ];
       it.each(headers)("Has %p header", async (header) => {
-        const { findByText } = render(<App />);
+        const { findByText } = renderApp();
         await expect(findByText(header)).resolves.toBeInTheDocument();
       });
     });
     describe("Items", () => {
       it("Has 10 items", async () => {
-        const { queryAllByText } = render(<App />);
+        const { queryAllByText } = renderApp();
         await waitFor(() => {
           expect(AssetServices.getAssets).toHaveBeenCalledTimes(1);
         });
@@ -76,7 +96,7 @@ describe("App", () => {
           "date_revision",
         ];
         it.each(visible_fields)("Renders %p", async (field) => {
-          const { findAllByText, findAllByAltText } = render(<App />);
+          const { findAllByText, findAllByAltText } = renderApp();
 
           await waitFor(() => {
             expect(AssetServices.getAssets).toHaveBeenCalledTimes(1);
