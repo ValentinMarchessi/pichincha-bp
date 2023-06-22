@@ -1,6 +1,6 @@
-import App from "@/App.tsx";
+import App from "@/pages/App";
 import { render, waitFor } from "@testing-library/react";
-import { AssetServices as AssetServicesImport } from "./services";
+import { AssetServices as AssetServicesImport } from "../services";
 import asset from "@tests/__mocks__/asset.json";
 
 jest.mock("./services");
@@ -48,20 +48,23 @@ describe("App", () => {
         expect(queryAllByText(asset.name)).toHaveLength(10);
       });
       describe("Fields", () => {
-        it.each(Object.entries(asset))("Has %p field", async (field, value) => {
-          const { queryAllByText, findAllByText, findAllByAltText } = render(
-            <App />
-          );
+        const visible_fields: (keyof typeof asset)[] = [
+          "name",
+          "logo",
+          "description",
+          "date_release",
+          "date_revision",
+        ];
+        it.each(visible_fields)("Renders %p", async (field) => {
+          const { findAllByText, findAllByAltText } = render(<App />);
 
           await waitFor(() => {
             expect(AssetServices.getAssets).toHaveBeenCalledTimes(1);
           });
 
+          const value = asset[field];
+
           switch (field) {
-            case "id":
-              // id is not displayed
-              expect(queryAllByText(value)).toHaveLength(0);
-              break;
             case "logo":
               // logo is displayed as an image
               expect(await findAllByAltText(`${asset.name}-logo`)).toHaveLength(

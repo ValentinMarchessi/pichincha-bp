@@ -1,8 +1,8 @@
 // import { useState } from "react";
 import { useEffect, useState } from "react";
 import "./App.css";
-import Table from "./components/Table";
-import { AssetServices } from "./services";
+import Table from "../components/Table";
+import { AssetServices } from "../services";
 
 function App() {
   const [assets, setAssets] = useState<Asset[]>([]);
@@ -17,6 +17,10 @@ function App() {
         <img id="logo" src="logo.png" alt="logo-banco-pichincha" />
       </nav>
       <div id="body">
+        <div className="header">
+          <input id="searchbar" type="text" placeholder="Search..." />
+          <button id="">Agregar</button>
+        </div>
         <Table<Asset>
           headers={[
             "Logo",
