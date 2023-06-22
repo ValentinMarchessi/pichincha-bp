@@ -7,6 +7,7 @@ table#asset-table {
   border-radius: 0.4rem;
   border-collapse: separate;
   border-spacing: 0;
+  width: 100%;
 }
 
 table#asset-table thead tr {
@@ -21,7 +22,7 @@ table#asset-table td {
   max-width: 14rem;
 }
 
-table#asset-table tbody tr td {
+table#asset-table tbody td {
   border-bottom: 1px solid var(--grey);
 }
 

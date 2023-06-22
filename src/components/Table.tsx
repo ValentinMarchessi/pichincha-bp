@@ -4,9 +4,15 @@ interface Props<I> {
   headers: string[];
   items: I[];
   mapper: (item: I) => JSX.Element;
+  fallback?: JSX.Element;
 }
 
-export default function Table<I>({ headers, items, mapper }: Props<I>) {
+export default function Table<I>({
+  headers,
+  items,
+  mapper,
+  fallback,
+}: Props<I>) {
   return (
     <table id="asset-table">
       <thead>
@@ -18,12 +24,31 @@ export default function Table<I>({ headers, items, mapper }: Props<I>) {
           ))}
         </tr>
       </thead>
-      <tbody>{items.map(mapper)}</tbody>
-      <tfoot>
-        <tr>
-          <td>{items.length} Resultados</td>
-        </tr>
-      </tfoot>
+      <tbody>
+        {items.length > 0
+          ? items.map(mapper)
+          : fallback ?? <DefaultFallback colSpan={headers.length} />}
+      </tbody>
+      {items.length > 0 && (
+        <tfoot>
+          <tr>
+            <td>{items.length} Resultados</td>
+          </tr>
+        </tfoot>
+      )}
     </table>
+  );
+}
+
+function DefaultFallback({ colSpan }: { colSpan: number }) {
+  return (
+    <tr>
+      <td
+        colSpan={colSpan}
+        style={{ textAlign: "center", borderBottom: "none" }}
+      >
+        No hay resultados
+      </td>
+    </tr>
   );
 }
