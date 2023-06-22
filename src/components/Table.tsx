@@ -13,7 +13,7 @@ export default function Table<I>({ headers, items, mapper }: Props<I>) {
         <tr>
           {headers.map((header) => (
             <th key={header}>
-              <span>{header}</span>
+              <h2>{header}</h2>
             </th>
           ))}
         </tr>

@@ -14,6 +14,10 @@ describe("Table", () => {
     </tr>
   ));
 
+  afterEach(() => {
+    mapper.mockClear();
+  });
+
   it("Is defined", () => {
     const { baseElement } = render(
       <Table headers={["id", "name"]} items={[item]} mapper={mapper} />
@@ -30,12 +34,12 @@ describe("Table", () => {
     expect(getByText("name")).toBeInTheDocument();
   });
 
-  it("Renders the items", () => {
+  it("Renders the items with mapper", () => {
     const { getByText } = render(
       <Table headers={["id", "name"]} items={[item]} mapper={mapper} />
     );
-
     expect(getByText(item.id)).toBeInTheDocument();
     expect(getByText(item.name)).toBeInTheDocument();
+    expect(mapper).toBeCalledTimes(1);
   });
 });

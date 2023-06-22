@@ -11,9 +11,12 @@ table#asset-table {
 table#asset-table thead tr {
   background-color: #f6f7f7;
 }
+table#asset-table thead h2 {
+  font-size: 1.1rem;
+}
 table#asset-table th,
 table#asset-table td {
-  padding: 1rem;
+  padding: .8rem;
   max-width: 14rem;
 }
 
