@@ -1,19 +1,16 @@
 // import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import Table from "./components/Table";
-
-const asset: Asset = {
-  id: "trj-crd",
-  name: "Tarjetas de Credito",
-  logo: "https://www.visa.com.ec/dam/VCOM/regional/lac/SPA/Default/Pay%20With%20Visa/Tarjetas/visa-signature-400x225.jpg",
-  description: "Tarjeta de consumo bajo la modalidad de crédito",
-  date_release: "2023-02-01",
-  date_revision: "2024-02-01",
-};
-
-const items = Array.from({ length: 10 }, () => asset);
+import { AssetServices } from "./services";
 
 function App() {
+  const [assets, setAssets] = useState<Asset[]>([]);
+
+  useEffect(() => {
+    AssetServices.getAssets().then((items) => setAssets(items));
+  }, []);
+
   return (
     <>
       <nav>
@@ -29,23 +26,27 @@ function App() {
             "Fecha de reestructuración",
             "",
           ]}
-          items={items}
+          items={assets}
           mapper={(asset) => (
             <tr className="asset" key={asset.id}>
               <td>
-                <img className="logo" src={asset.logo} alt={asset.name} />
+                <img
+                  className="logo"
+                  src={asset.logo}
+                  alt={`${asset.name}-logo`}
+                />
               </td>
               <td>
-                <span>{asset.name}</span>
+                <p>{asset.name}</p>
               </td>
               <td>
-                <span>{asset.description}</span>
+                <p>{asset.description}</p>
               </td>
               <td>
-                <span>{asset.date_release}</span>
+                <p>{new Date(asset.date_release).toLocaleDateString()}</p>
               </td>
               <td>
-                <span>{asset.date_revision}</span>
+                <p>{new Date(asset.date_revision).toLocaleDateString()}</p>
               </td>
               <td>Actions</td>
             </tr>
