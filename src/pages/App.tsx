@@ -3,13 +3,14 @@ import Table from "@/components/Table";
 import { AssetServices } from "@/lib/services";
 import { Link } from "react-router-dom";
 import "./App.css";
+import Nav from "@/components/Nav";
 
 function App() {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    AssetServices.getAssets().then((assets) => setAssets(assets));
+    AssetServices.getAll().then((assets) => setAssets(assets));
   }, []);
 
   const filteredAssets = useMemo(
@@ -22,9 +23,7 @@ function App() {
 
   return (
     <>
-      <nav>
-        <img id="logo" src="logo.png" alt="logo-banco-pichincha" />
-      </nav>
+      <Nav />
       <div id="body">
         <div className="header">
           <input
