@@ -19,6 +19,11 @@ export default function Table<I>({ headers, items, mapper }: Props<I>) {
         </tr>
       </thead>
       <tbody>{items.map(mapper)}</tbody>
+      <tfoot>
+        <tr>
+          <td>{items.length} Resultados</td>
+        </tr>
+      </tfoot>
     </table>
   );
 }

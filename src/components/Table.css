@@ -3,6 +3,7 @@ table#asset-table {
   background-color: white;
   padding: 1.2rem;
   border: 1px solid var(--grey);
+  padding-bottom: 0;
   border-radius: 0.4rem;
   border-collapse: separate;
   border-spacing: 0;
@@ -16,11 +17,11 @@ table#asset-table thead h2 {
 }
 table#asset-table th,
 table#asset-table td {
-  padding: .8rem;
+  padding: 0.8rem;
   max-width: 14rem;
 }
 
-table#asset-table tr td {
+table#asset-table tbody tr td {
   border-bottom: 1px solid var(--grey);
 }
 
@@ -35,4 +36,16 @@ table tr.asset td {
   align-items: center;
   align-content: center;
   align-self: center;
+}
+
+table#asset-table tfoot tr {
+  padding-inline: 2rem;
+  box-sizing: border-box;
+  align-items: end;
+  height: 3rem;
+}
+table#asset-table tfoot tr td {
+  padding: 0;
+  padding-inline-start: 2rem;
+  vertical-align: middle;
 }
