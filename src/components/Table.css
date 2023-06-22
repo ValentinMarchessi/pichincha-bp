@@ -1,7 +1,7 @@
 table#asset-table {
   margin: auto;
   background-color: white;
-  padding: 1.2rem;
+  padding: .8rem;
   border: 1px solid var(--grey);
   padding-bottom: 0;
   border-radius: 0.4rem;
@@ -24,6 +24,9 @@ table#asset-table td {
 
 table#asset-table tbody td {
   border-bottom: 1px solid var(--grey);
+}
+table#asset-table tbody td p {
+  text-align: center;
 }
 
 table tr.asset img.logo {

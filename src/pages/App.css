@@ -1,21 +1,5 @@
-nav {
-  width: 100%;
-  display: flex;
-  padding: 1.4rem;
-  background-color: white;
-  border-bottom: 1px solid var(--grey);
-}
-nav #logo {
-  height: 3rem;
-  margin-inline: auto;
-}
-
-nav h1 {
-  color: #162141;
-}
-
 #body {
-  margin: 2rem 12rem;
+  margin: 2rem min(12rem, 90%);
 }
 
 #body .header {
@@ -27,7 +11,21 @@ nav h1 {
 
 #searchbar {
   border: 1px solid var(--dark-grey);
-  padding: .4rem .7rem;
-  border-radius: .2rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 0.2rem;
   outline: none;
+}
+
+a#assetForm {
+  text-decoration: none;
+  color: black;
+  font-weight: 600;
+  background-color: var(--yellow);
+  padding: 0.7rem 1.5rem;
+  border-radius: 0.2rem;
+
+  transition: filter 0.2s ease-in-out;
+}
+a#assetForm:hover {
+  filter: brightness(0.9);
 }
