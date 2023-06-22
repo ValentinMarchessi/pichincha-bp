@@ -1,3 +1,5 @@
+import { ENVIRONMENT } from "@/lib/enums";
+
 const MOCK_ENVIRONMENT = {
   VITE_API_URL: "https://api.betterplace.org",
   VITE_AUTHOR_ID: "1",
