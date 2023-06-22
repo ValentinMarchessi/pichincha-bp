@@ -25,10 +25,10 @@ describe("App", () => {
     });
 
   afterEach(() => {
-    AssetServices.getAssets.mockClear();
+    AssetServices.getAll.mockClear();
   });
   beforeEach(() => {
-    AssetServices.getAssets.mockResolvedValue(items);
+    AssetServices.getAll.mockResolvedValue(items);
   });
   it("Should have a logo", async () => {
     const { findByAltText } = renderApp();
@@ -43,8 +43,8 @@ describe("App", () => {
         });
         it("Filters items by name", async () => {
           const name = "Mocked name";
-          AssetServices.getAssets.mockClear();
-          AssetServices.getAssets.mockResolvedValue([
+          AssetServices.getAll.mockClear();
+          AssetServices.getAll.mockResolvedValue([
             ...items,
             {
               ...asset,
@@ -65,8 +65,8 @@ describe("App", () => {
         it("Displays a message when no items match the search criteria", async () => {
           const { findByPlaceholderText, findByText } = renderApp();
           const name = "Mocked name";
-          AssetServices.getAssets.mockClear();
-          AssetServices.getAssets.mockResolvedValue([
+          AssetServices.getAll.mockClear();
+          AssetServices.getAll.mockResolvedValue([
             ...items,
             {
               ...asset,
@@ -97,8 +97,8 @@ describe("App", () => {
         });
         it("Updates the search results as the user types in the search input", async () => {
           const names = ["Rockfest", "Runnemede", "Rockfall", "Rockfestfall"];
-          AssetServices.getAssets.mockClear();
-          AssetServices.getAssets.mockResolvedValue(
+          AssetServices.getAll.mockClear();
+          AssetServices.getAll.mockResolvedValue(
             names.map((name) => ({ ...assetFactory(), name }))
           );
 
@@ -107,7 +107,7 @@ describe("App", () => {
           const user = userEvent.setup();
 
           await waitFor(() => {
-            expect(AssetServices.getAssets).toHaveBeenCalledTimes(1);
+            expect(AssetServices.getAll).toHaveBeenCalledTimes(1);
           });
 
           const options = { selector: "p", exact: false };
@@ -132,8 +132,8 @@ describe("App", () => {
         });
         it("Ignores case sensitivity when filtering items by name", async () => {
           const name = "Mocked name";
-          AssetServices.getAssets.mockClear();
-          AssetServices.getAssets.mockResolvedValue([
+          AssetServices.getAll.mockClear();
+          AssetServices.getAll.mockResolvedValue([
             ...items,
             {
               ...asset,
@@ -169,7 +169,7 @@ describe("App", () => {
           const user = userEvent.setup();
           const button = await findByText("Agregar");
           await act(async () => {
-            expect(AssetServices.getAssets).toHaveBeenCalledTimes(1);
+            expect(AssetServices.getAll).toHaveBeenCalledTimes(1);
             await user.click(button);
           });
           expect(window.location.pathname.endsWith("/assetForm")).toBeTruthy();
@@ -192,7 +192,7 @@ describe("App", () => {
       it("Has 10 items", async () => {
         const { queryAllByText } = renderApp();
         await waitFor(() => {
-          expect(AssetServices.getAssets).toHaveBeenCalledTimes(1);
+          expect(AssetServices.getAll).toHaveBeenCalledTimes(1);
         });
         // 10 items
         expect(queryAllByText(asset.name)).toHaveLength(10);
@@ -209,7 +209,7 @@ describe("App", () => {
           const { findAllByText, findAllByAltText } = renderApp();
 
           await waitFor(() => {
-            expect(AssetServices.getAssets).toHaveBeenCalledTimes(1);
+            expect(AssetServices.getAll).toHaveBeenCalledTimes(1);
           });
 
           const value = asset[field];
