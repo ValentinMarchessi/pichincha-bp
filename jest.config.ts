@@ -17,6 +17,7 @@ const config: Config = {
   testPathIgnorePatterns: [
     "<rootDir>[/\\\\](node_modules|.next)[/\\\\]",
     "<rootDir>/__tests__/__mocks__",
+    "<rootDir>/__tests__/utils.ts",
   ],
   transformIgnorePatterns: ["[/\\\\]node_modules[/\\\\].+\\.(ts|tsx)$"],
   transform: {
@@ -31,6 +32,11 @@ const config: Config = {
     "^@mocks/(.*)": ["<rootDir>/__tests__/__mocks__/$1"],
     "^.+\\.(css|less|scss|sass)$": "<rootDir>/__tests__/__mocks__/styleMock.ts",
   },
+  coveragePathIgnorePatterns: [
+    "<rootDir>/__tests__",
+    "<rootDir>/jest.config.ts",
+    "<rootDir>/jest.setup.ts",
+  ],
 };
 
 export default config;
