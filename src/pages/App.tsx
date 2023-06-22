@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Table from "@/components/Table";
-import { AssetServices } from "@/services";
+import { AssetServices } from "@/lib/services";
 import { Link } from "react-router-dom";
 import "./App.css";
 
