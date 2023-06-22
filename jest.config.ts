@@ -22,6 +22,8 @@ const config: Config = {
   transform: {
     "^.+\\.tsx?$": "ts-jest",
   },
+  resetMocks: false,
+  automock: false,
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   moduleNameMapper: {
     "^@/(.*)": ["<rootDir>/src/$1"],
