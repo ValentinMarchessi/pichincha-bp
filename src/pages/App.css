@@ -15,5 +15,19 @@ nav h1 {
 }
 
 #body {
-  margin: 2rem 4rem;
+  margin: 2rem 12rem;
+}
+
+#body .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+
+#searchbar {
+  border: 1px solid var(--dark-grey);
+  padding: .4rem .7rem;
+  border-radius: .2rem;
+  outline: none;
 }
