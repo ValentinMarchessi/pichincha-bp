@@ -1,11 +1,13 @@
 import App from "@/pages/App";
 import { act, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { AssetServices as AssetServicesImport } from "@/services";
+import { AssetServices as AssetServicesImport } from "@/lib/services";
 import asset from "@tests/__mocks__/asset.json";
 import { BrowserRouter } from "react-router-dom";
 
-jest.mock("@/services");
+jest.mock("@/lib/helpers");
+jest.mock("@/lib/services");
+
 const AssetServices = AssetServicesImport as jest.Mocked<
   typeof AssetServicesImport
 >;
@@ -39,15 +41,123 @@ describe("App", () => {
           const { findByPlaceholderText } = renderApp();
           expect(await findByPlaceholderText("Search...")).toBeInTheDocument();
         });
-        it.todo("Filters items by name");
-        it.todo("Displays a message when no items match the search criteria");
-        it.todo(
-          "Clears the search results and displays all items when the search input is empty"
-        );
-        it.todo(
-          "Updates the search results as the user types in the search input"
-        );
-        it.todo("Ignores case sensitivity when filtering items by name");
+        it("Filters items by name", async () => {
+          const name = "Mocked name";
+          AssetServices.getAssets.mockClear();
+          AssetServices.getAssets.mockResolvedValue([
+            ...items,
+            {
+              ...asset,
+              name,
+            },
+          ]);
+
+          const { findByPlaceholderText, findAllByText } = renderApp();
+          const input = await findByPlaceholderText("Search...");
+          const user = userEvent.setup();
+
+          await act(async () => {
+            await user.type(input, name);
+          });
+
+          expect(await findAllByText(name)).toHaveLength(1);
+        });
+        it("Displays a message when no items match the search criteria", async () => {
+          const { findByPlaceholderText, findByText } = renderApp();
+          const name = "Mocked name";
+          AssetServices.getAssets.mockClear();
+          AssetServices.getAssets.mockResolvedValue([
+            ...items,
+            {
+              ...asset,
+              name,
+            },
+          ]);
+
+          const input = await findByPlaceholderText("Search...");
+          const user = userEvent.setup();
+
+          await act(async () => {
+            await user.clear(input);
+            await user.type(input, "non-existing name");
+          });
+
+          expect(await findByText("No hay resultados")).toBeInTheDocument();
+        });
+        it("Clears the search results and displays all items when the search input is empty", async () => {
+          const { findByPlaceholderText, findAllByText } = renderApp();
+          const input = await findByPlaceholderText("Search...");
+          const user = userEvent.setup();
+
+          await act(async () => {
+            await user.type(input, items[0].name);
+          });
+
+          expect(await findAllByText(items[0].name)).toHaveLength(items.length);
+        });
+        it("Updates the search results as the user types in the search input", async () => {
+          const names = ["Rockfest", "Runnemede", "Rockfall", "Rockfestfall"];
+          AssetServices.getAssets.mockClear();
+          AssetServices.getAssets.mockResolvedValue(
+            names.map((name) => ({ ...assetFactory(), name }))
+          );
+
+          const { findByPlaceholderText, findAllByText } = renderApp();
+          const input = await findByPlaceholderText("Search...");
+          const user = userEvent.setup();
+
+          await waitFor(() => {
+            expect(AssetServices.getAssets).toHaveBeenCalledTimes(1);
+          });
+
+          const options = { selector: "p", exact: false };
+
+          await act(async () => {
+            await user.clear(input);
+            await user.type(input, "Rock");
+          });
+          expect(await findAllByText("Rock", options)).toHaveLength(3);
+
+          await act(async () => {
+            await user.clear(input);
+            await user.type(input, "Run");
+          });
+          expect(await findAllByText("Runnemede", options)).toHaveLength(1);
+
+          await act(async () => {
+            await user.clear(input);
+            await user.type(input, "Rockfest");
+          });
+          expect(await findAllByText("Rockfest", options)).toHaveLength(2);
+        });
+        it("Ignores case sensitivity when filtering items by name", async () => {
+          const name = "Mocked name";
+          AssetServices.getAssets.mockClear();
+          AssetServices.getAssets.mockResolvedValue([
+            ...items,
+            {
+              ...asset,
+              name,
+            },
+          ]);
+
+          const { findByPlaceholderText, findAllByText } = renderApp();
+          const input = await findByPlaceholderText("Search...");
+          const user = userEvent.setup();
+
+          await act(async () => {
+            await user.type(input, name.toLowerCase());
+          });
+
+          expect(await findAllByText(name)).toHaveLength(1);
+
+          await act(async () => {
+            await user.clear(input);
+            await user.type(input, name.toUpperCase());
+          });
+
+          expect(await findAllByText(name)).toHaveLength(1);
+        });
       });
       describe("Add asset", () => {
         it("Has a button to add assets", async () => {
