@@ -1,9 +1,9 @@
 import App from "@/pages/App";
-import { render, waitFor } from "@testing-library/react";
-import { AssetServices as AssetServicesImport } from "../services";
+import { act, render, waitFor } from "@testing-library/react";
+import { AssetServices as AssetServicesImport } from "@/services";
 import asset from "@tests/__mocks__/asset.json";
 
-jest.mock("./services");
+jest.mock("@/services");
 const AssetServices = AssetServicesImport as jest.Mocked<
   typeof AssetServicesImport
 >;
@@ -26,6 +26,26 @@ describe("App", () => {
     expect(await findByAltText("logo-banco-pichincha")).toBeInTheDocument();
   });
   describe("Table", () => {
+    describe("Controls", () => {
+      it("Has a search bar", async () => {
+        const { findByPlaceholderText } = render(<App />);
+        expect(await findByPlaceholderText("Search...")).toBeInTheDocument();
+      });
+      describe.only("Add asset", () => {
+        it("Has a button to add assets", async () => {
+          const { findByText } = render(<App />);
+          expect(await findByText("Agregar")).toBeInTheDocument();
+        });
+        it("Redirects to asset form", async () => {
+          const { findByText } = render(<App />);
+          await act(async () => {
+            const button = await findByText("Agregar");
+            button.click();
+          });
+          expect(await findByText("Asset Form")).toBeInTheDocument();
+        });
+      });
+    });
     describe("Headers", () => {
       const headers = [
         "Logo",

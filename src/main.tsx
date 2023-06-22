@@ -11,7 +11,7 @@ const router = createBrowserRouter([
     element: <App />,
   },
   {
-    path: "/create",
+    path: "/assetForm",
     element: <AssetForm />,
   },
 ]);
