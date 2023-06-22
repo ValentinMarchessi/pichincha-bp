@@ -9,13 +9,13 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    AssetServices.getAssets().then((items) => setAssets(items));
+    AssetServices.getAssets().then((assets) => setAssets(assets));
   }, []);
 
   const filteredAssets = useMemo(
     () =>
       assets.filter((asset) =>
-        asset.name.toLowerCase().includes(searchQuery.toLowerCase())
+        asset.name.toLowerCase().startsWith(searchQuery.toLowerCase())
       ),
     [assets, searchQuery]
   );
