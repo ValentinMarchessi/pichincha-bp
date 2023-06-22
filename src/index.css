@@ -11,8 +11,40 @@
 
   --grey: rgb(235, 235, 235);
   --dark-grey: rgb(200, 200, 200);
+  --yellow: #f9de4b;
+  --blue: #0f265c;
 }
 
 body {
   margin: 0;
+}
+
+button {
+  font-family: inherit;
+  text-decoration: none;
+  color: var(--blue);
+  font-weight: 700;
+  font-size: 1rem;
+  background-color: var(--yellow);
+  padding: 0.7rem 1.5rem;
+  border-radius: 0.2rem;
+  border: none;
+  cursor: pointer;
+
+  transition: filter 150ms ease;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  background-color: var(--grey);
+  color: var(--dark-grey);
+}
+
+button.secondary {
+  background-color: var(--grey);
+  color: var(--blue);
+}
+
+button:hover {
+  filter: brightness(0.9);
 }
