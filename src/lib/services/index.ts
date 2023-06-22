@@ -1,13 +1,16 @@
+import { getEnvironmentVar } from "@/lib/helpers";
+import { ENVIRONMENT } from "@/lib/enums";
+
 export class AssetServices {
-  private static URL = import.meta.env.VITE_API_URL;
+  private static URL = getEnvironmentVar(ENVIRONMENT.API_URL);
   private static headers: Headers = new Headers({
     "Content-Type": "application/json",
-    // TODO: Change authorId to 5356 when form is ready
-    authorId: "1",
+    authorId: getEnvironmentVar(ENVIRONMENT.AUTHOR_ID),
   });
 
-  static async getAssets() {
+  static async getAssets(): Promise<Asset[]> {
     const response = await fetch(`${this.URL}/bp/products`, {
+      method: "GET",
       headers: this.headers,
     });
     const data = await response.json();
