@@ -10,8 +10,8 @@ export class AssetServices {
 
   static async getAll(): Promise<Asset[]> {
     const response = await fetch(`${this.URL}/bp/products`, {
-      method: "GET",
       headers: this.headers,
+      method: "GET",
     });
     const data = await response.json();
     return data;
@@ -19,9 +19,9 @@ export class AssetServices {
 
   static async create(asset: Asset) {
     const response = await fetch(`${this.URL}/bp/products`, {
-      method: "POST",
-      headers: this.headers,
       body: JSON.stringify(asset),
+      headers: this.headers,
+      method: "POST",
     });
     const data = await response.json();
     return data;
@@ -29,10 +29,13 @@ export class AssetServices {
 
   static async update(asset: Asset) {
     const response = await fetch(`${this.URL}/bp/products`, {
-      method: "PUT",
-      headers: this.headers,
       body: JSON.stringify(asset),
+      headers: this.headers,
+      method: "PUT",
     });
+    if (response.status !== 200) {
+      throw new Error(await response.text());
+    }
     const data = await response.json();
     return data;
   }
@@ -41,8 +44,8 @@ export class AssetServices {
     const response = await fetch(
       `${this.URL}/bp/products?${new URLSearchParams({ id })}`,
       {
-        method: "DELETE",
         headers: this.headers,
+        method: "DELETE",
       }
     );
     if (response.status === 404) {
@@ -55,8 +58,8 @@ export class AssetServices {
     const response = await fetch(
       `${this.URL}/bp/products/verification?${new URLSearchParams({ id })}`,
       {
-        method: "GET",
         headers: this.headers,
+        method: "GET",
       }
     );
     return response.json();

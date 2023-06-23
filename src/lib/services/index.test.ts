@@ -13,6 +13,7 @@ describe("Asset Services", () => {
     spy = jest.spyOn(global, "fetch").mockImplementation(
       jest.fn(() =>
         Promise.resolve({
+          statu: 200,
           json: () => Promise.resolve(assetFactory(NUMBER_OF_ASSETS)),
         })
       ) as jest.Mock
@@ -78,18 +79,30 @@ describe("Asset Services", () => {
   describe("update", () => {
     const ENDPOINT_PATH = "bp/products";
     const asset = assetFactory(1)[0];
+
     it("Returns the updated asset", async () => {
       spy.mockImplementationOnce(
         jest.fn(() =>
           Promise.resolve({
+            status: 200,
             json: () => Promise.resolve(asset),
           })
         ) as jest.Mock
       );
+
       const data = await AssetServices.update(asset);
       expect(data).toEqual(asset);
     });
     it("Calls fetch with the correct URL and config", async () => {
+      spy.mockImplementationOnce(
+        jest.fn(() =>
+          Promise.resolve({
+            status: 200,
+            json: () => Promise.resolve(asset),
+          })
+        ) as jest.Mock
+      );
+
       const URL = getEnvironmentVar(ENVIRONMENT.API_URL);
       const config: RequestInit = {
         method: "PUT",
@@ -101,6 +114,21 @@ describe("Asset Services", () => {
       };
       await AssetServices.update(asset);
       expect(fetch).toHaveBeenCalledWith(`${URL}/${ENDPOINT_PATH}`, config);
+    });
+
+    it("Returns the response text if the response status is not 200", async () => {
+      const responseText = "Error";
+      spy.mockImplementationOnce(
+        jest.fn(() =>
+          Promise.resolve({
+            status: 404,
+            text: () => Promise.resolve(responseText),
+          })
+        ) as jest.Mock
+      );
+      await expect(AssetServices.update(asset)).rejects.toThrowError(
+        responseText
+      );
     });
   });
 
