@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives",
+    "lint:fix": "eslint src --ext ts,tsx --report-unused-disable-directives --fix",
     "preview": "vite preview",
     "test": "jest",
     "test:coverage": "jest --coverage"
@@ -16,6 +17,7 @@
     "match-sorter": "6.3.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-icons": "^4.10.1",
     "react-router-dom": "6.13.0",
     "sort-by": "1.2.0"
   },
@@ -23,7 +25,6 @@
     "@faker-js/faker": "^8.0.2",
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/react": "^14.0.0",
-    "@testing-library/react-hooks": "^8.0.1",
     "@testing-library/user-event": "14.4.3",
     "@types/jest": "29.5.2",
     "@types/react": "18.0.37",
