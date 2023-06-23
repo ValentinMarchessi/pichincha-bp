@@ -10,13 +10,22 @@ import { BrowserRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import asset from "@mocks/asset.json";
 import { AssetServices as AssetServices_untyped } from "@/lib/services";
+import { useParams as useParams_untyped } from "react-router-dom";
+import { UserEvent } from "node_modules/@testing-library/user-event/dist/types/setup/setup";
 
 const AssetServices = AssetServices_untyped as jest.Mocked<
   typeof AssetServices_untyped
 >;
+const useParams = useParams_untyped as jest.MockedFunction<
+  typeof useParams_untyped
+>;
 
 jest.mock("@/lib/helpers");
 jest.mock("@/lib/services");
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useParams: jest.fn(),
+}));
 
 describe("AssetForm", () => {
   const setup = () => ({
@@ -32,6 +41,10 @@ describe("AssetForm", () => {
   });
   afterAll(() => {
     dateSpy.mockRestore();
+  });
+
+  beforeEach(() => {
+    useParams.mockReturnValue({});
   });
 
   afterEach(() => {
@@ -93,6 +106,20 @@ describe("AssetForm", () => {
             fireEvent.blur(input);
           });
           expect(AssetServices.verifyId).toHaveBeenCalledWith("a");
+        });
+        it("Shows a message if the ID is not unique", async () => {
+          AssetServices.verifyId.mockResolvedValueOnce(true);
+          const { findByLabelText, findByText, user } = setup();
+          const input = await findByLabelText("ID", { exact: false });
+          await act(async () => {
+            await user.type(input, "a");
+          });
+          expect(input).toHaveValue("a");
+          await act(async () => {
+            fireEvent.blur(input);
+          });
+          expect(AssetServices.verifyId).toHaveBeenCalledWith("a");
+          expect(await findByText("El ID ya está en uso.")).toBeInTheDocument();
         });
       });
       describe("Name", () => {
@@ -202,9 +229,8 @@ describe("AssetForm", () => {
     beforeAll(() => {
       AssetServices.verifyId.mockResolvedValue(false);
     });
-    const fillForm = async (ui: RenderResult) => {
+    const fillForm = async (ui: RenderResult, user: UserEvent) => {
       const form = await ui.findByRole("asset-form");
-      const user = userEvent.setup();
       const labels: Record<keyof Asset, string> = {
         id: "ID",
         name: "Nombre",
@@ -230,7 +256,7 @@ describe("AssetForm", () => {
     });
     it("Has a 'Reiniciar' button that resets the form", async () => {
       const { user, ...ui } = setup();
-      const inputs: HTMLElement[] = await fillForm(ui);
+      const inputs: HTMLElement[] = await fillForm(ui, user);
       await user.click(await ui.findByText("Reiniciar"));
       for (const input of inputs) {
         expect(input).toHaveValue("");
@@ -241,7 +267,7 @@ describe("AssetForm", () => {
         jest.fn(() => new Promise((res) => setTimeout(res, 300)))
       );
       const { user, ...ui } = setup();
-      await fillForm(ui);
+      await fillForm(ui, user);
       await user.click(await ui.findByText("Enviar"));
 
       // Silly workarround to fix tests since clicking the button doesn't guarantee for the onSubmit handler to be called
@@ -256,6 +282,25 @@ describe("AssetForm", () => {
       expect(AssetServices.create).toHaveBeenCalledWith(asset);
       expect(window.location.pathname).toBe("/");
     });
+    it("Has a 'Enviar' button that submits the form and redirects if the asset was updated succesfully", async () => {
+      useParams.mockReturnValue({ id: "1" });
+      AssetServices.update.mockImplementation(
+        jest.fn(() => new Promise((res) => setTimeout(res, 300)))
+      );
+      const { user, ...ui } = setup();
+      await user.click(await ui.findByText("Enviar"));
+      // Silly workarround to fix tests since clicking the button doesn't guarantee for the onSubmit handler to be called
+      fireEvent.submit(await ui.findByRole("asset-form"));
+
+      await waitFor(async () =>
+        expect(
+          await ui.findByText("Enviando...", { selector: "p" })
+        ).toBeInTheDocument()
+      );
+
+      expect(AssetServices.update).toHaveBeenCalled();
+      expect(window.location.pathname).toBe("/");
+    });
     it("Displays the error message if the asset creation failed", async () => {
       const errorMessage = "Error";
       AssetServices.create.mockImplementation(
@@ -267,7 +312,7 @@ describe("AssetForm", () => {
         )
       );
       const { user, ...ui } = setup();
-      await fillForm(ui);
+      await fillForm(ui, user);
       await user.click(await ui.findByText("Enviar"));
 
       // Silly workarround to fix tests since clicking the button doesn't guarantee for the onSubmit handler to be called
@@ -285,7 +330,7 @@ describe("AssetForm", () => {
         jest.fn(() => new Promise((_, reject) => setTimeout(reject, 300)))
       );
       const { user, ...ui } = setup();
-      await fillForm(ui);
+      await fillForm(ui, user);
       await user.click(await ui.findByText("Enviar"));
 
       // Silly workarround to fix tests since clicking the button doesn't guarantee for the onSubmit handler to be called
