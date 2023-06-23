@@ -1,0 +1,24 @@
+.dropdown-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-container .dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  z-index: 10;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.dropdown-container .head {
+  display: flex;
+}
+
+.dropdown-container:hover .dropdown-content,
+.dropdown-container:hover .dropdown-head,
+.dropdown-content:hover {
+  display: block;
+}
