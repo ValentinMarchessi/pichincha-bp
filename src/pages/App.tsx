@@ -1,16 +1,21 @@
 import { useEffect, useMemo, useState } from "react";
 import Table from "@/components/Table";
 import { AssetServices } from "@/lib/services";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./App.css";
 import Nav from "@/components/Nav";
+import Asset from "@/components/Asset";
 
 function App() {
+  const navigate = useNavigate();
   const [assets, setAssets] = useState<Asset[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    AssetServices.getAll().then((assets) => setAssets(assets));
+    AssetServices.getAll()
+      .then((assets) => setAssets(assets))
+      .then(() => setLoading(false));
   }, []);
 
   const filteredAssets = useMemo(
@@ -20,6 +25,19 @@ function App() {
       ),
     [assets, searchQuery]
   );
+
+  const assetHandlers = {
+    onDelete: (id: string) => {
+      AssetServices.delete(id)
+        .then(() => setAssets((a) => a.filter((asset) => asset.id !== id)))
+        .catch((e) => alert(e.message));
+    },
+    onEdit: (id: string) => {
+      navigate(`/assetForm/${id}`, {
+        state: { asset: assets.find((asset) => asset.id === id) },
+      });
+    },
+  };
 
   return (
     <>
@@ -36,41 +54,24 @@ function App() {
             Agregar
           </Link>
         </div>
-        <Table<Asset>
-          headers={[
-            "Logo",
-            "Nombre del producto",
-            "Descripción",
-            "Fecha de liberación",
-            "Fecha de reestructuración",
-            "",
-          ]}
-          items={filteredAssets}
-          mapper={(asset) => (
-            <tr className="asset" key={asset.id}>
-              <td>
-                <img
-                  className="logo"
-                  src={asset.logo}
-                  alt={`${asset.name}-logo`}
-                />
-              </td>
-              <td>
-                <p>{asset.name}</p>
-              </td>
-              <td>
-                <p>{asset.description}</p>
-              </td>
-              <td>
-                <p>{new Date(asset.date_release).toLocaleDateString()}</p>
-              </td>
-              <td>
-                <p>{new Date(asset.date_revision).toLocaleDateString()}</p>
-              </td>
-              <td>Actions</td>
-            </tr>
-          )}
-        />
+        {loading ? (
+          <p>Cargando...</p>
+        ) : (
+          <Table<Asset>
+            headers={[
+              "Logo",
+              "Nombre del producto",
+              "Descripción",
+              "Fecha de liberación",
+              "Fecha de reestructuración",
+              "",
+            ]}
+            items={filteredAssets}
+            mapper={(asset) => (
+              <Asset {...asset} key={asset.id} {...assetHandlers} />
+            )}
+          />
+        )}
       </div>
     </>
   );
