@@ -1,5 +1,6 @@
 import {
   RenderResult,
+  act,
   fireEvent,
   render,
   waitFor,
@@ -63,7 +64,7 @@ describe("AssetForm", () => {
         expect(input).toHaveValue("");
       });
     });
-    describe("Validation", () => {
+    describe.only("Validation", () => {
       describe("ID", () => {
         it("Is required", () => {
           const { getByLabelText } = setup();
@@ -80,7 +81,19 @@ describe("AssetForm", () => {
           const input = getByLabelText("ID", { exact: false });
           expect(input).toHaveAttribute("max", "10");
         });
-        it.todo("Validates that the ID is unique with the AssetsService");
+        it("Validates that the ID is unique with the AssetsService", async () => {
+          AssetServices.verifyId.mockResolvedValueOnce(false);
+          const { findByLabelText, user } = setup();
+          const input = await findByLabelText("ID", { exact: false });
+          await act(async () => {
+            await user.type(input, "a");
+          });
+          expect(input).toHaveValue("a");
+          await act(async () => {
+            fireEvent.blur(input);
+          });
+          expect(AssetServices.verifyId).toHaveBeenCalledWith("a");
+        });
       });
       describe("Name", () => {
         it("Is required", async () => {
@@ -92,9 +105,13 @@ describe("AssetForm", () => {
           const { user, findByLabelText, findByText } = setup();
           const input = await findByLabelText("Nombre", { exact: false });
           expect(input).toHaveAttribute("min", "5");
-          await user.type(input, "a");
+          await act(async () => {
+            await user.type(input, "a");
+          });
           expect(input).toHaveValue("a");
-          await user.click(await findByText("Enviar"));
+          await act(async () => {
+            await user.click(await findByText("Enviar"));
+          });
           expect(
             await findByText("Debe tener al menos 5 carácteres")
           ).toBeInTheDocument();
@@ -103,9 +120,13 @@ describe("AssetForm", () => {
           const { user, findByLabelText, findByText } = setup();
           const input = await findByLabelText("Nombre", { exact: false });
           expect(input).toHaveAttribute("max", "100");
-          await user.type(input, "a".repeat(200));
+          await act(async () => {
+            await user.type(input, "a".repeat(200));
+          });
           expect(input).toHaveValue("a".repeat(200));
-          await user.click(await findByText("Enviar"));
+          await act(async () => {
+            await user.click(await findByText("Enviar"));
+          });
           expect(
             await findByText("Debe tener un máximo de 100 carácteres")
           ).toBeInTheDocument();
@@ -178,6 +199,9 @@ describe("AssetForm", () => {
     });
   });
   describe("Buttons", () => {
+    beforeAll(() => {
+      AssetServices.verifyId.mockResolvedValue(false);
+    });
     const fillForm = async (ui: RenderResult) => {
       const form = await ui.findByRole("asset-form");
       const user = userEvent.setup();

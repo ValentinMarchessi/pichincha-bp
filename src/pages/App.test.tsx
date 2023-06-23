@@ -35,6 +35,8 @@ describe("App", () => {
     expect(await findByAltText("logo-banco-pichincha")).toBeInTheDocument();
   });
   describe("Table", () => {
+    const ITEMS_PER_PAGE = 5;
+
     describe("Controls", () => {
       describe("Searchbar", () => {
         it("Has a placeholder text", async () => {
@@ -93,7 +95,9 @@ describe("App", () => {
             await user.type(input, items[0].name);
           });
 
-          expect(await findAllByText(items[0].name)).toHaveLength(items.length);
+          expect(await findAllByText(items[0].name)).toHaveLength(
+            ITEMS_PER_PAGE
+          );
         });
         it("Updates the search results as the user types in the search input", async () => {
           const names = ["Rockfest", "Runnemede", "Rockfall", "Rockfestfall"];
@@ -189,13 +193,13 @@ describe("App", () => {
       });
     });
     describe("Items", () => {
-      it("Has 10 items", async () => {
+      it(`Displays ${ITEMS_PER_PAGE} items per page`, async () => {
         const { queryAllByText } = renderUI();
         await waitFor(() => {
           expect(AssetServices.getAll).toHaveBeenCalledTimes(1);
         });
         // 10 items
-        expect(queryAllByText(asset.name)).toHaveLength(10);
+        expect(queryAllByText(asset.name)).toHaveLength(ITEMS_PER_PAGE);
       });
       describe("Fields", () => {
         const visible_fields: (keyof typeof asset)[] = [
@@ -218,7 +222,7 @@ describe("App", () => {
             case "logo":
               // logo is displayed as an image
               expect(await findAllByAltText(`${asset.name}-logo`)).toHaveLength(
-                10
+                ITEMS_PER_PAGE
               );
               break;
             case "date_release":
@@ -228,13 +232,13 @@ describe("App", () => {
                 await findAllByText(new Date(value).toLocaleDateString(), {
                   selector: "p",
                 })
-              ).toHaveLength(10);
+              ).toHaveLength(ITEMS_PER_PAGE);
               break;
             default:
               // the rest of the fields are displayed as text
               expect(
                 await findAllByText(value, { selector: "p" })
-              ).toHaveLength(10);
+              ).toHaveLength(ITEMS_PER_PAGE);
               break;
           }
         });

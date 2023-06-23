@@ -52,13 +52,17 @@ export default function Table<I>({
             </td>
             <td colSpan={5}>
               <div className="pagination-controls">
-                <button onClick={prev} disabled={page === 0}>
+                <button data-testid="prev" onClick={prev} disabled={page === 0}>
                   <BiSolidLeftArrow />
                 </button>
                 <p>
                   {page + 1} de {pages}
                 </p>
-                <button onClick={next} disabled={page === pages - 1}>
+                <button
+                  data-testid="next"
+                  onClick={next}
+                  disabled={page === pages - 1}
+                >
                   <BiSolidRightArrow />
                 </button>
               </div>
