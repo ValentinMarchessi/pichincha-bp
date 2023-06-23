@@ -4,9 +4,18 @@ import userEvent from "@testing-library/user-event";
 import { AssetServices as AssetServicesImport } from "@/lib/services";
 import asset from "@tests/__mocks__/asset.json";
 import { BrowserRouter } from "react-router-dom";
+import { useNavigate as useNavigate_untyped } from "react-router-dom";
 
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: jest.fn(),
+}));
 jest.mock("@/lib/helpers");
 jest.mock("@/lib/services");
+
+const useNavigate = useNavigate_untyped as jest.MockedFunction<
+  typeof useNavigate_untyped
+>;
 
 const AssetServices = AssetServicesImport as jest.Mocked<
   typeof AssetServicesImport
@@ -19,15 +28,20 @@ const assetFactory = (): Asset => ({
 const items = Array.from({ length: 10 }, assetFactory);
 
 describe("App", () => {
-  const renderUI = () =>
-    render(<App />, {
+  const navigate = jest.fn();
+  const renderUI = () => ({
+    user: userEvent.setup(),
+    ...render(<App />, {
       wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
-    });
+    }),
+  });
 
   afterEach(() => {
     AssetServices.getAll.mockClear();
+    useNavigate.mockClear();
   });
   beforeEach(() => {
+    useNavigate.mockImplementation(() => navigate);
     AssetServices.getAll.mockResolvedValue(items);
   });
   it("Should have a logo", async () => {
@@ -241,6 +255,56 @@ describe("App", () => {
               ).toHaveLength(ITEMS_PER_PAGE);
               break;
           }
+        });
+      });
+      describe("Actions", () => {
+        describe("Edit", () => {
+          it("Has an edit button for each item", async () => {
+            const { findAllByTestId } = renderUI();
+            await waitFor(() => {
+              expect(AssetServices.getAll).toHaveBeenCalledTimes(1);
+            });
+            expect(await findAllByTestId("menu-icon")).toHaveLength(
+              ITEMS_PER_PAGE
+            );
+          });
+          it("Redirects to asset form with all the asset data loaded into the navigation state", async () => {
+            const { findAllByText /* getByLabelText */, user } = renderUI();
+            const buttons = await findAllByText("Editar");
+            expect(AssetServices.getAll).toHaveBeenCalledTimes(1);
+            await act(async () => {
+              await user.click(buttons[0]);
+            });
+            await waitFor(() =>
+              expect(navigate).toHaveBeenCalledWith(
+                `/assetForm/${items[0].id}`,
+                { state: { asset: items[0] } }
+              )
+            );
+          });
+        });
+        describe("Delete", () => {
+          beforeAll(() => {
+            AssetServices.delete.mockResolvedValue(true);
+          });
+          it("Has a delete button for each item", async () => {
+            const { findAllByTestId } = renderUI();
+            expect(AssetServices.getAll).toHaveBeenCalledTimes(1);
+            expect(await findAllByTestId("delete-icon")).toHaveLength(
+              ITEMS_PER_PAGE
+            );
+          });
+          it("Deletes the asset", async () => {
+            const { findAllByText } = renderUI();
+            const user = userEvent.setup();
+            const buttons = await findAllByText("Eliminar");
+            await act(async () => {
+              await user.click(buttons[0]);
+            });
+            await waitFor(() => {
+              expect(AssetServices.delete).toHaveBeenCalledWith(items[0].id);
+            });
+          });
         });
       });
     });

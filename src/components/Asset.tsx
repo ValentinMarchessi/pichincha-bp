@@ -28,14 +28,14 @@ export default function Asset({ onEdit, onDelete, id, ...asset }: Props) {
         <p>{new Date(asset.date_revision).toLocaleDateString()}</p>
       </td>
       <td>
-        <Menu head={<GrMenu size={20} />}>
+        <Menu head={<GrMenu data-testid="menu-icon" size={20} />}>
           <div className="controls">
             <button className="secondary" onClick={() => onEdit(id)}>
               <FaPen />
               Editar
             </button>
             <button className="secondary delete" onClick={() => onDelete(id)}>
-              <ImBin />
+              <ImBin data-testid="delete-icon" />
               Eliminar
             </button>
           </div>
