@@ -6,7 +6,7 @@ nav {
   border-bottom: 1px solid var(--grey);
   justify-content: center;
 }
-nav #logo {
+nav #nav-logo-image {
   height: 3rem;
   margin-inline: auto;
 }
