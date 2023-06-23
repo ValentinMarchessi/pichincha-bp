@@ -34,6 +34,8 @@ const config: Config = {
   },
   collectCoverageFrom: ["src/**/*.{ts,tsx}", "!src/**/*.d.ts"],
   coveragePathIgnorePatterns: [
+    "<rootDir>/node_modules",
+    "<rootDir>/src/main.tsx",
     "<rootDir>/__tests__",
     "<rootDir>/jest.config.ts",
     "<rootDir>/jest.setup.ts",

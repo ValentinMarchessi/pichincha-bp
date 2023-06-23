@@ -1,3 +1,5 @@
+import { ENVIRONMENT } from "@/lib/enums";
+
 export const getEnvironmentVar = (key: ENVIRONMENT): string => {
   const variable = import.meta.env[key];
   if (variable === undefined) {

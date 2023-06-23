@@ -137,6 +137,18 @@ describe("Asset Services", () => {
         config
       );
     });
+    it("Throws an error if the response status is 404", () => {
+      spy.mockImplementationOnce(
+        jest.fn(() =>
+          Promise.resolve({
+            status: 404,
+          })
+        ) as jest.Mock
+      );
+      expect(AssetServices.delete(asset.id)).rejects.toThrowError(
+        "Asset not found"
+      );
+    });
   });
 
   describe("verifyId", () => {

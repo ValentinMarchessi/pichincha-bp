@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 type Options = {
   type?: "text" | "number" | "email" | "password" | "date";
@@ -10,7 +10,7 @@ type Options = {
   label?: string;
 };
 
-export default function useTextInput(
+export default function useInput(
   name: string,
   options?: Options
 ): {
@@ -20,12 +20,12 @@ export default function useTextInput(
   reset: () => void;
   setValue: React.Dispatch<React.SetStateAction<string>>;
 } {
-  const [value, setValue] = React.useState(options?.defaultValue ?? "");
-  const [error, setError] = React.useState<string>("");
-  const [touched, setTouched] = React.useState<boolean>(false);
+  const [value, setValue] = useState(options?.defaultValue ?? "");
+  const [error, setError] = useState<string>("");
+  const [touched, setTouched] = useState<boolean>(false);
   const { type = "text", min, max } = options ?? {};
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!touched) return;
 
     switch (type) {

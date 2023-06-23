@@ -15,11 +15,8 @@ const AssetServices = AssetServices_untyped as jest.Mocked<
 >;
 
 jest.mock("@/lib/helpers");
-jest.mock("@/lib/services", () => ({
-  AssetServices: {
-    create: jest.fn(console.log),
-  },
-}));
+jest.mock("@/lib/services");
+
 describe("AssetForm", () => {
   const setup = () => ({
     user: userEvent.setup(),
@@ -92,14 +89,26 @@ describe("AssetForm", () => {
           expect(input).toBeRequired();
         });
         it("Requires a minimum of 5 characters", async () => {
-          const { findByLabelText } = setup();
+          const { user, findByLabelText, findByText } = setup();
           const input = await findByLabelText("Nombre", { exact: false });
           expect(input).toHaveAttribute("min", "5");
+          await user.type(input, "a");
+          expect(input).toHaveValue("a");
+          await user.click(await findByText("Enviar"));
+          expect(
+            await findByText("Debe tener al menos 5 carácteres")
+          ).toBeInTheDocument();
         });
         it("Requires a maximum of 100 characters", async () => {
-          const { findByLabelText } = setup();
+          const { user, findByLabelText, findByText } = setup();
           const input = await findByLabelText("Nombre", { exact: false });
           expect(input).toHaveAttribute("max", "100");
+          await user.type(input, "a".repeat(200));
+          expect(input).toHaveValue("a".repeat(200));
+          await user.click(await findByText("Enviar"));
+          expect(
+            await findByText("Debe tener un máximo de 100 carácteres")
+          ).toBeInTheDocument();
         });
       });
       describe("Description", () => {
@@ -223,7 +232,7 @@ describe("AssetForm", () => {
       expect(AssetServices.create).toHaveBeenCalledWith(asset);
       expect(window.location.pathname).toBe("/");
     });
-    it("Displays an error message if the asset creation failed", async () => {
+    it("Displays the error message if the asset creation failed", async () => {
       const errorMessage = "Error";
       AssetServices.create.mockImplementation(
         jest.fn(
@@ -246,6 +255,29 @@ describe("AssetForm", () => {
         ).toBeInTheDocument()
       );
       expect(await ui.findByText(errorMessage)).toBeInTheDocument();
+    });
+    it("Displays a default error message if the asset creation failed and the error message is empty", async () => {
+      AssetServices.create.mockImplementation(
+        jest.fn(() => new Promise((_, reject) => setTimeout(reject, 300)))
+      );
+      const { user, ...ui } = setup();
+      await fillForm(ui);
+      await user.click(await ui.findByText("Enviar"));
+
+      // Silly workarround to fix tests since clicking the button doesn't guarantee for the onSubmit handler to be called
+      fireEvent.submit(await ui.findByRole("asset-form"));
+
+      await waitFor(async () =>
+        expect(
+          await ui.findByText("Enviando...", { selector: "p" })
+        ).toBeInTheDocument()
+      );
+      expect(
+        await ui.findByText("Ha ocurrido un error inesperado", {
+          exact: false,
+          selector: "p",
+        })
+      ).toBeInTheDocument();
     });
   });
 });
