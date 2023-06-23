@@ -64,7 +64,7 @@ describe("AssetForm", () => {
         expect(input).toHaveValue("");
       });
     });
-    describe.only("Validation", () => {
+    describe("Validation", () => {
       describe("ID", () => {
         it("Is required", () => {
           const { getByLabelText } = setup();
