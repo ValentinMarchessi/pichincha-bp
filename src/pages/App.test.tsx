@@ -305,6 +305,20 @@ describe("App", () => {
               expect(AssetServices.delete).toHaveBeenCalledWith(items[0].id);
             });
           });
+          it("Shows an alert if the deletion fails", async () => {
+            AssetServices.delete.mockRejectedValueOnce(new Error("Mocked"));
+            const alertSpy = jest.spyOn(window, "alert");
+            const { findAllByText } = renderUI();
+            const user = userEvent.setup();
+            const buttons = await findAllByText("Eliminar");
+            await act(async () => {
+              await user.click(buttons[0]);
+            });
+            await waitFor(() => {
+              expect(AssetServices.delete).toHaveBeenCalledWith(items[0].id);
+            });
+            expect(alertSpy).toHaveBeenCalledWith("Mocked");
+          });
         });
       });
     });
