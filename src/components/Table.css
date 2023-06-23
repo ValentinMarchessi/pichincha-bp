@@ -33,7 +33,7 @@ table#asset-table tbody td p {
   text-align: center;
 }
 
-table#asset-table tfoot tr {
+table#asset-table tfoot tr td:first-child {
   padding-inline: 2rem;
   box-sizing: border-box;
   align-items: end;
@@ -41,6 +41,16 @@ table#asset-table tfoot tr {
 }
 table#asset-table tfoot tr td {
   padding: 0;
-  padding-inline-start: 2rem;
   vertical-align: middle;
+}
+
+table#asset-table .pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 1rem;
+}
+
+table#asset-table .pagination-controls button{
+  padding: 8px;
 }

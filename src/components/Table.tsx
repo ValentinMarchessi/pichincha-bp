@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "./Table.css";
 
 interface Props<I> {
@@ -7,12 +8,25 @@ interface Props<I> {
   fallback?: JSX.Element;
 }
 
+const ITEMS_PER_PAGE = 5;
+
 export default function Table<I>({
   headers,
   items,
   mapper,
   fallback,
 }: Props<I>) {
+  const [page, setPage] = useState(0);
+
+  const pages = Math.ceil(items.length / ITEMS_PER_PAGE);
+  const next = () => setPage((page) => Math.min(page + 1, pages - 1));
+  const prev = () => setPage((page) => Math.max(page - 1, 0));
+
+  const itemsPage =
+    items.length > 0
+      ? items.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE)
+      : [];
+
   return (
     <table id="asset-table">
       <thead>
@@ -25,8 +39,8 @@ export default function Table<I>({
         </tr>
       </thead>
       <tbody>
-        {items.length > 0
-          ? items.map(mapper)
+        {itemsPage.length > 0
+          ? itemsPage.map(mapper)
           : fallback ?? <DefaultFallback colSpan={headers.length} />}
       </tbody>
       {items.length > 0 && (
@@ -34,6 +48,19 @@ export default function Table<I>({
           <tr>
             <td>
               <p>{items.length} Resultados</p>
+            </td>
+            <td colSpan={4}>
+              <div className="pagination-controls">
+                <button onClick={prev} disabled={page === 0}>
+                  Anterior
+                </button>
+                <p>
+                  {page + 1} de {pages}
+                </p>
+                <button onClick={next} disabled={page === pages - 1}>
+                  Siguiente
+                </button>
+              </div>
             </td>
           </tr>
         </tfoot>
