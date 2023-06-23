@@ -8,11 +8,22 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
-  },
-  {
-    path: "/assetForm",
-    element: <AssetForm />,
+    children: [
+      {
+        element: <App />,
+        index: true,
+      },
+      {
+        element: <AssetForm />,
+        path: "assetForm",
+        children: [
+          {
+            element: <AssetForm />,
+            path: ":id",
+          },
+        ],
+      },
+    ],
   },
 ]);
 
