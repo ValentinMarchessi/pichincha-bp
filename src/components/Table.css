@@ -52,5 +52,6 @@ table#asset-table .pagination-controls {
 }
 
 table#asset-table .pagination-controls button{
+  display: flex;
   padding: 8px;
 }

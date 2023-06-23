@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./Table.css";
+import { BiSolidLeftArrow, BiSolidRightArrow } from "react-icons/bi";
 
 interface Props<I> {
   headers: string[];
@@ -49,16 +50,16 @@ export default function Table<I>({
             <td>
               <p>{items.length} Resultados</p>
             </td>
-            <td colSpan={4}>
+            <td colSpan={5}>
               <div className="pagination-controls">
                 <button onClick={prev} disabled={page === 0}>
-                  Anterior
+                  <BiSolidLeftArrow />
                 </button>
                 <p>
                   {page + 1} de {pages}
                 </p>
                 <button onClick={next} disabled={page === pages - 1}>
-                  Siguiente
+                  <BiSolidRightArrow />
                 </button>
               </div>
             </td>
