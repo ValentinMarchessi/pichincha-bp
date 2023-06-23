@@ -1,5 +1,5 @@
 import { InputHTMLAttributes } from "react";
-
+import "./Input.css";
 interface InputProps {
   label: string;
   error?: string;
@@ -18,7 +18,7 @@ export default function Input({
         {rest.required && "*"}
       </label>
       <input id={name} name={name} {...rest} />
-      {error && <p className="error">{error}</p>}
+      <div className="input-info">{error && <p className="error">{error}</p>}</div>
     </div>
   );
 }
