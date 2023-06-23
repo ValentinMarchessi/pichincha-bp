@@ -19,7 +19,7 @@ const assetFactory = (): Asset => ({
 const items = Array.from({ length: 10 }, assetFactory);
 
 describe("App", () => {
-  const renderApp = () =>
+  const renderUI = () =>
     render(<App />, {
       wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
     });
@@ -31,14 +31,14 @@ describe("App", () => {
     AssetServices.getAll.mockResolvedValue(items);
   });
   it("Should have a logo", async () => {
-    const { findByAltText } = renderApp();
+    const { findByAltText } = renderUI();
     expect(await findByAltText("logo-banco-pichincha")).toBeInTheDocument();
   });
   describe("Table", () => {
     describe("Controls", () => {
       describe("Searchbar", () => {
         it("Has a placeholder text", async () => {
-          const { findByPlaceholderText } = renderApp();
+          const { findByPlaceholderText } = renderUI();
           expect(await findByPlaceholderText("Search...")).toBeInTheDocument();
         });
         it("Filters items by name", async () => {
@@ -52,7 +52,7 @@ describe("App", () => {
             },
           ]);
 
-          const { findByPlaceholderText, findAllByText } = renderApp();
+          const { findByPlaceholderText, findAllByText } = renderUI();
           const input = await findByPlaceholderText("Search...");
           const user = userEvent.setup();
 
@@ -63,7 +63,7 @@ describe("App", () => {
           expect(await findAllByText(name)).toHaveLength(1);
         });
         it("Displays a message when no items match the search criteria", async () => {
-          const { findByPlaceholderText, findByText } = renderApp();
+          const { findByPlaceholderText, findByText } = renderUI();
           const name = "Mocked name";
           AssetServices.getAll.mockClear();
           AssetServices.getAll.mockResolvedValue([
@@ -85,7 +85,7 @@ describe("App", () => {
           expect(await findByText("No hay resultados")).toBeInTheDocument();
         });
         it("Clears the search results and displays all items when the search input is empty", async () => {
-          const { findByPlaceholderText, findAllByText } = renderApp();
+          const { findByPlaceholderText, findAllByText } = renderUI();
           const input = await findByPlaceholderText("Search...");
           const user = userEvent.setup();
 
@@ -102,7 +102,7 @@ describe("App", () => {
             names.map((name) => ({ ...assetFactory(), name }))
           );
 
-          const { findByPlaceholderText, findAllByText } = renderApp();
+          const { findByPlaceholderText, findAllByText } = renderUI();
           const input = await findByPlaceholderText("Search...");
           const user = userEvent.setup();
 
@@ -141,7 +141,7 @@ describe("App", () => {
             },
           ]);
 
-          const { findByPlaceholderText, findAllByText } = renderApp();
+          const { findByPlaceholderText, findAllByText } = renderUI();
           const input = await findByPlaceholderText("Search...");
           const user = userEvent.setup();
 
@@ -161,11 +161,11 @@ describe("App", () => {
       });
       describe("Add asset", () => {
         it("Has a button to add assets", async () => {
-          const { findByText } = renderApp();
+          const { findByText } = renderUI();
           expect(await findByText("Agregar")).toBeInTheDocument();
         });
         it("Redirects to asset form", async () => {
-          const { findByText } = renderApp();
+          const { findByText } = renderUI();
           const user = userEvent.setup();
           const button = await findByText("Agregar");
           await act(async () => {
@@ -184,13 +184,13 @@ describe("App", () => {
         "Fecha de liberación",
       ];
       it.each(headers)("Has %p header", async (header) => {
-        const { findByText } = renderApp();
+        const { findByText } = renderUI();
         await expect(findByText(header)).resolves.toBeInTheDocument();
       });
     });
     describe("Items", () => {
       it("Has 10 items", async () => {
-        const { queryAllByText } = renderApp();
+        const { queryAllByText } = renderUI();
         await waitFor(() => {
           expect(AssetServices.getAll).toHaveBeenCalledTimes(1);
         });
@@ -206,7 +206,7 @@ describe("App", () => {
           "date_revision",
         ];
         it.each(visible_fields)("Renders %p", async (field) => {
-          const { findAllByText, findAllByAltText } = renderApp();
+          const { findAllByText, findAllByAltText } = renderUI();
 
           await waitFor(() => {
             expect(AssetServices.getAll).toHaveBeenCalledTimes(1);
