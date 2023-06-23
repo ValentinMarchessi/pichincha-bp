@@ -1,48 +1,74 @@
+import Input from "@/components/Input";
 import Nav from "@/components/Nav";
-import "./AssetForm.css";
 import useInput from "@/lib/hooks/useInput";
 import { AssetServices } from "@/lib/services";
-import { useNavigate } from "react-router-dom";
-import Input from "@/components/Input";
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import "./AssetForm.css";
+import useTimeoutState from "@/lib/hooks/useTimeoutState";
 
 export default function AssetForm() {
+  const location = useLocation();
+  const params = useParams();
+  const {
+    asset: initial = {
+      id: "",
+      date_release: "",
+      date_revision: "",
+      description: "",
+      logo: "",
+      name: "",
+    },
+  } = (location?.state ?? {}) as { asset: Asset };
   const navigate = useNavigate();
   const inputs: Record<keyof Asset, ReturnType<typeof useInput>> = {
     id: useInput("id", {
-      required: true,
-      min: 3,
-      max: 10,
+      defaultValue: initial.id,
+      disabled: !!params.id,
       label: "ID",
+      max: 10,
+      min: 3,
+      required: true,
     }),
     name: useInput("name", {
-      required: true,
-      min: 5,
-      max: 100,
+      defaultValue: initial.name,
       label: "Nombre",
+      max: 100,
+      min: 5,
+      required: true,
     }),
     description: useInput("description", {
-      required: true,
-      min: 10,
-      max: 200,
+      defaultValue: initial.description,
       label: "Descripción",
+      max: 200,
+      min: 10,
+      required: true,
     }),
-    logo: useInput("logo", { required: true, label: "Logo" }),
+    logo: useInput("logo", {
+      defaultValue: initial.logo,
+      label: "Logo",
+      required: true,
+    }),
     date_release: useInput("date_release", {
-      type: "date",
+      defaultValue: initial.date_release.split("T")[0],
       label: "Fecha Liberación",
       min: new Date().toISOString().split("T")[0],
       required: true,
+      type: "date",
     }),
     date_revision: useInput("date_revision", {
-      type: "date",
+      defaultValue: initial.date_revision.split("T")[0],
+      disabled: true,
       label: "Fecha Revisión",
       required: true,
-      disabled: true,
+      type: "date",
     }),
   };
-  const [error, setError] = useState("");
+  const [error, setError] = useTimeoutState("", 5000);
   const [submitting, setSubmitting] = useState(false);
+
+  const handle = (asset: Asset) =>
+    params.id ? AssetServices.update(asset) : AssetServices.create(asset);
 
   useEffect(() => {
     if (inputs.date_release.props.value) {
@@ -58,7 +84,7 @@ export default function AssetForm() {
     const asset = Object.fromEntries(
       Object.values(inputs).map(({ props }) => [props.name, props.value])
     ) as Asset;
-    await AssetServices.create(asset)
+    await handle(asset)
       .then(() => {
         navigate("/");
       })
@@ -95,7 +121,7 @@ export default function AssetForm() {
           ))}
           <div className="info">
             {submitting && <p>Enviando...</p>}
-            {error && <p className="error">{error}</p>}
+            {!submitting && error && <p className="error">{error}</p>}
           </div>
           <div className="buttons">
             <button className="secondary" type="reset" onClick={reset}>
