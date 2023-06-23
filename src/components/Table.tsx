@@ -32,7 +32,9 @@ export default function Table<I>({
       {items.length > 0 && (
         <tfoot>
           <tr>
-            <td>{items.length} Resultados</td>
+            <td>
+              <p>{items.length} Resultados</p>
+            </td>
           </tr>
         </tfoot>
       )}
