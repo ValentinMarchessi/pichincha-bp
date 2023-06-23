@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 type Options = {
   type?: "text" | "number" | "email" | "password" | "date";
@@ -8,6 +8,7 @@ type Options = {
   required?: boolean;
   disabled?: boolean;
   label?: string;
+  validator?: (value: string) => string | null | Promise<string | null>;
 };
 
 export default function useInput(
@@ -23,7 +24,25 @@ export default function useInput(
   const [value, setValue] = useState(options?.defaultValue ?? "");
   const [error, setError] = useState<string>("");
   const [touched, setTouched] = useState<boolean>(false);
-  const { type = "text", min, max } = options ?? {};
+  const [validating, setValidating] = useState<boolean>(false);
+  const { type = "text", min, max, validator } = options ?? {};
+
+  const validate = useCallback(
+    async (value: string) => {
+      if (!validator) return;
+      const v = validator(value);
+      if (v instanceof Promise) {
+        await v.then((v) => {
+          setError(v ?? "");
+        });
+      } else if (typeof v === "string") {
+        setError(v);
+      } else {
+        setError("");
+      }
+    },
+    [validator]
+  );
 
   useEffect(() => {
     if (!touched) return;
@@ -39,14 +58,18 @@ export default function useInput(
         }
         break;
       default:
-        setError("");
         break;
     }
+
+    if (validating) return;
+
+    setValidating(true);
+    validate(value).finally(() => setValidating(false));
 
     return () => {
       setTouched(false);
     };
-  }, [value, type, name, touched, min, max]);
+  }, [value, type, name, touched, min, max, validate, validating]);
 
   return {
     setValue,

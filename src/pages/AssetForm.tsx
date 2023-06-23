@@ -29,6 +29,10 @@ export default function AssetForm() {
       max: 10,
       min: 3,
       required: true,
+      validator: async (value) =>
+        await AssetServices.verifyId(value).then((taken) =>
+          !taken ? null : "El ID ya está en uso."
+        ),
     }),
     name: useInput("name", {
       defaultValue: initial.name,
