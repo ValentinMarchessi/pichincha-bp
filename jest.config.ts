@@ -32,6 +32,7 @@ const config: Config = {
     "^@mocks/(.*)": ["<rootDir>/__tests__/__mocks__/$1"],
     "^.+\\.(css|less|scss|sass)$": "<rootDir>/__tests__/__mocks__/styleMock.ts",
   },
+  collectCoverageFrom: ["src/**/*.{ts,tsx}", "!src/**/*.d.ts"],
   coveragePathIgnorePatterns: [
     "<rootDir>/__tests__",
     "<rootDir>/jest.config.ts",
