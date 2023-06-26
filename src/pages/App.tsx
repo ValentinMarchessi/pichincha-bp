@@ -11,6 +11,7 @@ function App() {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState<string[]>([]);
 
   useEffect(() => {
     AssetServices.getAll()
@@ -28,8 +29,10 @@ function App() {
 
   const assetHandlers = {
     onDelete: (id: string) => {
+      setDeleting((d) => [...d, id]);
       AssetServices.delete(id)
         .then(() => setAssets((a) => a.filter((asset) => asset.id !== id)))
+        .then(() => setDeleting((d) => d.filter((asset) => asset !== id)))
         .catch((e) => alert(e.message));
     },
     onEdit: (id: string) => {
@@ -68,7 +71,12 @@ function App() {
             ]}
             items={filteredAssets}
             mapper={(asset) => (
-              <Asset {...asset} key={asset.id} {...assetHandlers} />
+              <Asset
+                {...asset}
+                key={asset.id}
+                {...assetHandlers}
+                processing={deleting.includes(asset.id)}
+              />
             )}
           />
         )}

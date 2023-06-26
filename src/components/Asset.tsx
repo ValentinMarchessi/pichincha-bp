@@ -5,13 +5,30 @@ import { FaPen } from "react-icons/fa";
 import { ImBin } from "react-icons/im";
 
 type Props = Asset & {
+  processing?: boolean;
   onEdit: (id: string) => void | Promise<void>;
   onDelete: (id: string) => void | Promise<void>;
 };
 
-export default function Asset({ onEdit, onDelete, id, ...asset }: Props) {
+export default function Asset({
+  onEdit,
+  onDelete,
+  id,
+  processing,
+  ...asset
+}: Props) {
+  if (processing) {
+    return (
+      <tr className="asset processing" key={id}>
+        <td colSpan={6}>
+          <span className="spinner" />
+        </td>
+      </tr>
+    );
+  }
+
   return (
-    <tr className="asset" key={id}>
+    <tr className={`asset ${processing ? "processing" : ""}`} key={id}>
       <td>
         <img className="logo" src={asset.logo} alt={`${asset.name}-logo`} />
       </td>
