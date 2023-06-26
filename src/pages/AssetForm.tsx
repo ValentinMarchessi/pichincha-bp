@@ -29,8 +29,8 @@ export default function AssetForm() {
       max: 10,
       min: 3,
       required: true,
-      validator: async (value) =>
-        await AssetServices.verifyId(value).then((taken) =>
+      validator: (value) =>
+        AssetServices.verifyId(value).then((taken) =>
           !taken ? null : "El ID ya está en uso."
         ),
     }),
@@ -99,7 +99,9 @@ export default function AssetForm() {
     setSubmitting(false);
   }
 
-  const isSubmitDisabled = Object.values(inputs).some((input) => input.error);
+  const isSubmitDisabled = Object.values(inputs).some(
+    (input) => input.error || input.validating
+  );
   const reset = () => {
     Object.values(inputs).forEach((input) => input.reset());
   };
@@ -117,9 +119,10 @@ export default function AssetForm() {
         >
           {Object.values(inputs).map((input) => (
             <Input
+              key={input.label}
               label={input.label}
               error={input.error}
-              key={input.label}
+              validating={input.validating}
               {...input.props}
             />
           ))}

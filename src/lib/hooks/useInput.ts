@@ -17,6 +17,7 @@ export default function useInput(
 ): {
   props: React.InputHTMLAttributes<HTMLInputElement>;
   error: string;
+  validating: boolean;
   label: string;
   reset: () => void;
   setValue: React.Dispatch<React.SetStateAction<string>>;
@@ -76,13 +77,14 @@ export default function useInput(
     reset: () => setValue(options?.defaultValue ?? ""),
     label: options?.label ?? name,
     error,
+    validating,
     props: {
       type: options?.type ?? "text",
       name,
       value,
       min: options?.min,
       max: options?.max,
-      disabled: options?.disabled,
+      disabled: options?.disabled || validating,
       required: options?.required,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
         setValue(e.target.value),

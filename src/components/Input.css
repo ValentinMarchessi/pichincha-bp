@@ -27,3 +27,7 @@
 .input-container .input-info {
   height: 1.2rem;
 }
+
+.input-info > p {
+  margin: 0;
+}

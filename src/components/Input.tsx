@@ -3,12 +3,14 @@ import "./Input.css";
 interface InputProps {
   label: string;
   error?: string;
+  validating?: boolean;
 }
 
 export default function Input({
   label,
   name,
   error,
+  validating,
   ...rest
 }: InputProps & InputHTMLAttributes<HTMLInputElement>) {
   return (
@@ -18,7 +20,10 @@ export default function Input({
         {rest.required && "*"}
       </label>
       <input id={name} name={name} {...rest} />
-      <div className="input-info">{error && <p className="error">{error}</p>}</div>
+      <div className="input-info">
+        {validating && <p>Validando...</p>}
+        {error && <p className="error">{error}</p>}
+      </div>
     </div>
   );
 }
