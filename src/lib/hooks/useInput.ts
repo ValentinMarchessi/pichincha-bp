@@ -62,7 +62,7 @@ export default function useInput(
         break;
     }
 
-    if (validating) return;
+    if (validating || error) return;
 
     setValidating(true);
     validate(value).finally(() => setValidating(false));
@@ -70,7 +70,7 @@ export default function useInput(
     return () => {
       setTouched(false);
     };
-  }, [value, type, name, touched, min, max, validate, validating]);
+  }, [value, type, name, touched, min, max, validate, validating, error]);
 
   return {
     setValue,
