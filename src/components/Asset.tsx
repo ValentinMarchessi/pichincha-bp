@@ -27,6 +27,9 @@ export default function Asset({
     );
   }
 
+  const formatDate = (date: string) =>
+    new Date(date).toLocaleDateString("es", { timeZone: "UTC" });
+
   return (
     <tr className={`asset ${processing ? "processing" : ""}`} key={id}>
       <td>
@@ -39,10 +42,10 @@ export default function Asset({
         <p>{asset.description}</p>
       </td>
       <td>
-        <p>{new Date(asset.date_release).toLocaleDateString()}</p>
+        <p>{formatDate(asset.date_release)}</p>
       </td>
       <td>
-        <p>{new Date(asset.date_revision).toLocaleDateString()}</p>
+        <p>{formatDate(asset.date_revision)}</p>
       </td>
       <td>
         <Menu head={<GrMenu data-testid="menu-icon" size={20} />}>

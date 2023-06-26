@@ -52,8 +52,10 @@ export default function useInput(
       case "text":
         if (typeof min === "number" && value.length < min) {
           setError(`Debe tener al menos ${min} carácteres`);
+          return;
         } else if (typeof max === "number" && value.length > max) {
           setError(`Debe tener un máximo de ${max} carácteres`);
+          return;
         } else {
           setError("");
         }
