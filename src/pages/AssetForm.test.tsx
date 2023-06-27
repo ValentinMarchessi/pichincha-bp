@@ -95,30 +95,32 @@ describe("AssetForm", () => {
           expect(input).toHaveAttribute("max", "10");
         });
         it("Validates that the ID is unique with the AssetsService", async () => {
+          const text = "asdfg12345";
           AssetServices.verifyId.mockResolvedValueOnce(false);
           const { findByLabelText, user } = setup();
           const input = await findByLabelText("ID", { exact: false });
           await act(async () => {
-            await user.type(input, "a");
+            await user.type(input, text);
           });
-          expect(input).toHaveValue("a");
-          await act(async () => {
+          expect(input).toHaveValue(text);
+          act(() => {
             fireEvent.blur(input);
           });
-          expect(AssetServices.verifyId).toHaveBeenCalledWith("a");
+          expect(AssetServices.verifyId).toHaveBeenCalledWith(text);
         });
         it("Shows a message if the ID is not unique", async () => {
+          const text = "asdfg12345";
           AssetServices.verifyId.mockResolvedValueOnce(true);
           const { findByLabelText, findByText, user } = setup();
           const input = await findByLabelText("ID", { exact: false });
           await act(async () => {
-            await user.type(input, "a");
+            await user.type(input, text);
           });
-          expect(input).toHaveValue("a");
-          await act(async () => {
+          expect(input).toHaveValue(text);
+          act(() => {
             fireEvent.blur(input);
           });
-          expect(AssetServices.verifyId).toHaveBeenCalledWith("a");
+          expect(AssetServices.verifyId).toHaveBeenCalledWith(text);
           expect(await findByText("El ID ya está en uso.")).toBeInTheDocument();
         });
       });
