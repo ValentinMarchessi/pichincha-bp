@@ -28,7 +28,9 @@ describe("Asset", () => {
     const [releaseDate, revisionDate] = [
       asset.date_release,
       asset.date_revision,
-    ].map((date) => new Date(date).toLocaleDateString());
+    ].map((date) =>
+      new Date(date).toLocaleDateString("es", { timeZone: "UTC" })
+    );
 
     expect(getByAltText(`${asset.name}-logo`)).toBeInTheDocument();
     expect(await findByText(asset.name)).toBeInTheDocument();

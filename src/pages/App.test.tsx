@@ -243,9 +243,12 @@ describe("App", () => {
             case "date_revision":
               // date_release and date_revision are formatted using toLocaleDateString
               expect(
-                await findAllByText(new Date(value).toLocaleDateString(), {
-                  selector: "p",
-                })
+                await findAllByText(
+                  new Date(value).toLocaleDateString("es", { timeZone: "UTC" }),
+                  {
+                    selector: "p",
+                  }
+                )
               ).toHaveLength(ITEMS_PER_PAGE);
               break;
             default:
